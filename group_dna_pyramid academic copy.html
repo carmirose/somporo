@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Somporo — Group Health Pyramid</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0D0D0B;
+    --paper: #F5F2EC;
+    --rust: #C4401A;
+    --muted: #6B6860;
+    --rule: #D5D0C5;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+
+    --l0: #2C2C2A;
+    --l1: #4A3728;
+    --l2: #7A4E2D;
+    --l3: #A85F2E;
+    --l4: #C4401A;
+    --peak: #E8580A;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 64px 48px 100px;
+  }
+
+  .header {
+    border-top: 3px solid var(--ink);
+    padding-top: 20px;
+    margin-bottom: 52px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .header-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .opening {
+    font-family: var(--serif);
+    font-size: clamp(22px, 3.5vw, 30px);
+    line-height: 1.35;
+    color: var(--ink);
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+
+  .opening-sub {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 56px;
+    max-width: 580px;
+  }
+
+  .rule { border: none; border-top: 1px solid var(--rule); margin: 56px 0; }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+
+  /* ── PYRAMID ── */
+  .pyramid-wrap {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 16px;
+  }
+
+  .pyramid-svg {
+    flex: 1;
+    display: block;
+    overflow: visible;
+  }
+
+  .pyramid-svg polygon {
+    transition: filter 0.2s ease;
+    cursor: pointer;
+  }
+
+  .pyramid-svg polygon:hover {
+    filter: brightness(1.3) drop-shadow(0 4px 12px rgba(0,0,0,0.35));
+  }
+
+  .scaffold-col {
+    width: 140px;
+    flex-shrink: 0;
+    background: #E8E4DC;
+    border-left: 2px dashed var(--rule);
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .scaffold-col .sc-label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .scaffold-col p {
+    font-size: 11px;
+    line-height: 1.65;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .scaffold-col p strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ── LEVELS ── */
+  .levels {
+    margin-top: 56px;
+  }
+
+  .level {
+    margin-bottom: 52px;
+  }
+
+  .level-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 6px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .level-tag {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .level-name {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--ink);
+  }
+
+  .level-vars {
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: auto;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .level-body {
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 16px;
+    margin-bottom: 20px;
+  }
+
+  .level-body strong { color: var(--ink); font-weight: 500; }
+
+  .example-block {
+    background: #EDEAE2;
+    border-left: 3px solid var(--rule);
+    padding: 16px 20px;
+    margin-top: 4px;
+  }
+
+  .example-label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .example-text {
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: var(--ink);
+    font-weight: 300;
+  }
+
+  .example-text em {
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  /* ── SCAFFOLD NOTE ── */
+  .scaffold-note {
+    border: 1px dashed var(--rule);
+    padding: 20px 24px;
+    margin-top: 8px;
+  }
+
+  .scaffold-note .scaffold-note-label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .scaffold-note p {
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .scaffold-note p strong { color: var(--ink); font-weight: 500; }
+
+  /* ── SOURCE NOTE ── */
+  .source-note {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .source-note p {
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+    font-weight: 300;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="header-label">Somporo — Research Framework</span>
+    <span class="header-label">Carmiña Santamaria · May 2026</span>
+  </div>
+
+  <div class="opening">The Group Health Pyramid</div>
+  <p class="opening-sub">A synthesis of 9 fields of academic research into a hierarchical model of what makes a group healthy, effective, and worth joining. Each level is a precondition for the one above it. You cannot shortcut belonging without safety, or voice without belonging.</p>
+
+  <!-- PYRAMID VISUAL -->
+  <div class="section-label">Structure</div>
+
+  <div class="pyramid-wrap">
+
+    <svg class="pyramid-svg" viewBox="0 0 508 400" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- TIERS: trapezoid polygons, base at bottom -->
+      <polygon points="174,0 334,0 369,80 139,80"     fill="#E8580A"/>
+      <polygon points="139,80 369,80 404,160 104,160"  fill="#C4401A"/>
+      <polygon points="104,160 404,160 438,240 70,240" fill="#A85F2E"/>
+      <polygon points="70,240 438,240 473,320 35,320"  fill="#7A4E2D"/>
+      <polygon points="35,320 473,320 508,400 0,400"   fill="#4A3728"/>
+
+      <!-- TIER SEPARATORS -->
+      <line x1="139" y1="80"  x2="369" y2="80"  stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <line x1="104" y1="160" x2="404" y2="160" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <line x1="70"  y1="240" x2="438" y2="240" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <line x1="35"  y1="320" x2="473" y2="320" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+
+      <!-- PEAK (0–80) -->
+      <text x="254" y="18" text-anchor="middle" fill="rgba(255,255,255,0.6)"  font-family="'DM Sans',sans-serif"               font-size="8"  font-weight="500" letter-spacing="1.8">PEAK — GROWTH</text>
+      <text x="254" y="40" text-anchor="middle" fill="rgba(255,255,255,1)"    font-family="'DM Serif Display',Georgia,serif"    font-size="16">Deep Roots</text>
+      <text x="254" y="56" text-anchor="middle" fill="rgba(255,255,255,0.72)" font-family="'DM Sans',sans-serif"               font-size="9"  font-weight="300">Active Shared Practice</text>
+      <text x="254" y="69" text-anchor="middle" fill="rgba(255,255,255,0.72)" font-family="'DM Sans',sans-serif"               font-size="9"  font-weight="300">Bridging Outward</text>
+
+      <!-- LEVEL 4 (80–160) -->
+      <text x="254" y="98"  text-anchor="middle" fill="rgba(255,255,255,0.6)"  font-family="'DM Sans',sans-serif"              font-size="8"  font-weight="500" letter-spacing="1.8">LEVEL 4 — VOICE</text>
+      <text x="254" y="120" text-anchor="middle" fill="rgba(255,255,255,1)"    font-family="'DM Serif Display',Georgia,serif"   font-size="16">Influence &amp; Reciprocity</text>
+      <text x="254" y="136" text-anchor="middle" fill="rgba(255,255,255,0.72)" font-family="'DM Sans',sans-serif"              font-size="9"  font-weight="300">Members shape the group · The group responds</text>
+
+      <!-- LEVEL 3 (160–240) -->
+      <text x="254" y="178" text-anchor="middle" fill="rgba(255,255,255,0.6)"  font-family="'DM Sans',sans-serif"              font-size="8"  font-weight="500" letter-spacing="1.8">LEVEL 3 — BELONGING</text>
+      <text x="254" y="200" text-anchor="middle" fill="rgba(255,255,255,1)"    font-family="'DM Serif Display',Georgia,serif"   font-size="16">Membership Quality</text>
+      <text x="254" y="216" text-anchor="middle" fill="rgba(255,255,255,0.72)" font-family="'DM Sans',sans-serif"              font-size="9"  font-weight="300">Belonging &amp; Membership Quality</text>
+
+      <!-- LEVEL 2 (240–320) -->
+      <text x="254" y="258" text-anchor="middle" fill="rgba(255,255,255,0.6)"  font-family="'DM Sans',sans-serif"              font-size="8"  font-weight="500" letter-spacing="1.8">LEVEL 2 — SAFETY &amp; FIT</text>
+      <text x="254" y="280" text-anchor="middle" fill="rgba(255,255,255,1)"    font-family="'DM Serif Display',Georgia,serif"   font-size="16">Safety + Congruence</text>
+      <text x="254" y="296" text-anchor="middle" fill="rgba(255,255,255,0.72)" font-family="'DM Sans',sans-serif"              font-size="9"  font-weight="300">Psychological Safety · Identity Congruence</text>
+
+      <!-- BASE (320–400) -->
+      <text x="254" y="338" text-anchor="middle" fill="rgba(255,255,255,0.6)"  font-family="'DM Sans',sans-serif"              font-size="8"  font-weight="500" letter-spacing="1.8">BASE — EXISTENCE</text>
+      <text x="254" y="360" text-anchor="middle" fill="rgba(255,255,255,1)"    font-family="'DM Serif Display',Georgia,serif"   font-size="16">Shared Purpose</text>
+      <text x="254" y="376" text-anchor="middle" fill="rgba(255,255,255,0.72)" font-family="'DM Sans',sans-serif"              font-size="9"  font-weight="300">Without this, no group exists</text>
+
+    </svg>
+
+    <div class="scaffold-col">
+      <div class="sc-label">Scaffolding</div>
+      <p><strong>Enabling Structure</strong><br>size · roles · norms</p>
+      <p>Runs alongside every level. Absent → all levels erode.</p>
+    </div>
+
+  </div>
+
+  <hr class="rule"/>
+
+  <!-- LEVELS IN DETAIL -->
+  <div class="section-label">Each Level — What It Means & What It Looks Like</div>
+
+  <div class="levels">
+
+    <!-- BASE -->
+    <div class="level">
+      <div class="level-header">
+        <span class="level-tag" style="background: var(--l1);">Base</span>
+        <span class="level-name">Shared Purpose</span>
+        <span class="level-vars">Existence</span>
+      </div>
+      <div class="level-body">
+        Task commitment — not interpersonal warmth — is the primary driver of group cohesion (Mullen &amp; Copper, 1994). Zander (1976) is explicit: <strong>member motivation collapses when goals are unclear, regardless of how much people like each other.</strong> Without purpose, there is no group — just people in a room. Everything above depends on this existing first.
+      </div>
+      <div class="example-block">
+        <div class="example-label">Faith Study Group — What This Looks Like</div>
+        <div class="example-text">Everyone shows up knowing why they're there: to grow in their understanding of God, together. The group has a name, a format — watch the service, then discuss — and a consistent meeting time. Members can articulate why <em>this</em> group, not just why church. Without this, it's just people sitting in a living room watching a screen.</div>
+      </div>
+    </div>
+
+    <!-- LEVEL 2 -->
+    <div class="level">
+      <div class="level-header">
+        <span class="level-tag" style="background: var(--l2);">Level 2</span>
+        <span class="level-name">Safety &amp; Fit</span>
+        <span class="level-vars">Psychological Safety · Identity Congruence</span>
+      </div>
+      <div class="level-body">
+        These two work in parallel. <strong>Psychological safety</strong> is what enables people to actually show up — you can be physically present and still never open up. Edmondson (1999) found that safety predicts whether people take the interpersonal risks that make belonging possible. Without it, the group stays surface-level and nobody grows.<br/><br/>
+        <strong>Identity congruence</strong> is what tells you you're in the right place. Kristof-Brown (2005) found perceived fit is the gateway variable — if values don't align, belonging won't develop regardless of warmth or safety. Both must be present before the next level is reachable.
+      </div>
+      <div class="example-block">
+        <div class="example-label">Faith Study Group — What This Looks Like</div>
+        <div class="example-text">
+          <strong>Safety:</strong> Someone asks a question that reveals doubt — <em>"I'm not sure I believe this part"</em> — and nobody flinches. The leader models it first. People learn they can bring honest questions, not just agreeable ones.<br/><br/>
+          <strong>Fit:</strong> After a few sessions, you notice the group takes faith seriously but isn't rigid. The tone matches yours. You're not the most skeptical or the most devout — you belong somewhere in the middle of this particular room. You stop scanning for the exit.
+        </div>
+      </div>
+    </div>
+
+    <!-- LEVEL 3 -->
+    <div class="level">
+      <div class="level-header">
+        <span class="level-tag" style="background: var(--l3);">Level 3</span>
+        <span class="level-name">Belonging</span>
+        <span class="level-vars">Membership Quality</span>
+      </div>
+      <div class="level-body">
+        Belonging requires safety and fit to already be working. Baumeister &amp; Leary (1995) define it precisely: regular contact + continuity of the bond + mutual concern — all three must be present. Pardede &amp; Kovač (2025) add a critical nuance: <strong>the drive to belong and the felt sense of belonging are separable.</strong> Someone can join a group, feel safe, value-fit — and still not feel they truly belong. Bauer et al. (2025) confirm that a structured welcome process is the strongest predictor of long-term retention — stronger than role clarity or task fit.
+      </div>
+      <div class="example-block">
+        <div class="example-label">Faith Study Group — What This Looks Like</div>
+        <div class="example-text">You've been coming for two months. Someone notices when you miss a week and texts you. You know everyone's name and one real thing about their life. You arrive early without thinking about it. It no longer feels like attending — it feels like going to <em>your</em> group.</div>
+      </div>
+    </div>
+
+    <!-- LEVEL 4 -->
+    <div class="level">
+      <div class="level-header">
+        <span class="level-tag" style="background: var(--l4);">Level 4</span>
+        <span class="level-name">Influence &amp; Reciprocity</span>
+        <span class="level-vars">Voice</span>
+      </div>
+      <div class="level-body">
+        You don't claim voice in a group where you don't yet belong. Metz et al. (2018) found lack of autonomy and voice is the second strongest predictor of voluntary exit — but it only becomes relevant once someone is already in and has developed belonging. McMillan &amp; Chavis (1986) frame it as <strong>bidirectional</strong>: the member must matter to the group AND the group must respond. That bidirectionality requires belonging as a precondition.
+      </div>
+      <div class="example-block">
+        <div class="example-label">Faith Study Group — What This Looks Like</div>
+        <div class="example-text">You suggest changing how the discussion is run — starting with a silent reflection minute before questions. The group tries it. It sticks. You're no longer just a participant; the group is partly shaped by you. You feel the difference between being welcomed and actually mattering.</div>
+      </div>
+    </div>
+
+    <!-- PEAK -->
+    <div class="level">
+      <div class="level-header">
+        <span class="level-tag" style="background: var(--peak);">Peak</span>
+        <span class="level-name">Deep Roots</span>
+        <span class="level-vars">Active Shared Practice · Bridging Outward</span>
+      </div>
+      <div class="level-body">
+        <strong>Active Shared Practice</strong> (Wenger, 1998) is accumulated over time — shared language, rituals, history. You can't manufacture it. It only emerges after a group has worked through the lower levels long enough to develop its own identity and repertoire.<br/><br/>
+        <strong>Bridging Outward</strong> is the highest level because a group can only connect you to the wider world if it's healthy internally first. Putnam (2000) and Holt-Lunstad (2017) both point to this — the group becomes a launchpad, not just a container. That only happens at maturity.
+      </div>
+      <div class="example-block">
+        <div class="example-label">Faith Study Group — What This Looks Like</div>
+        <div class="example-text">
+          <strong>Shared Practice:</strong> The group has its own rhythm — someone always brings food, there's an inside joke about a question from month three, newer members hear stories from before they joined. The group has a history now. Membership means something because of what's been accumulated.<br/><br/>
+          <strong>Bridging Outward:</strong> A member is going through a divorce and someone in the group connects her to a counselor they know. Another member starts attending a second group because someone here introduced them. The group has become a node — it's not just where you belong, it's what connects you to a wider community you wouldn't have reached alone.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SCAFFOLD NOTE -->
+  <div class="scaffold-note">
+    <div class="scaffold-note-label">Scaffolding — Enabling Structure</div>
+    <p>Size, roles, and norms are not a level in the pyramid — they are the scaffolding that holds every level up. Nobody notices the scaffolding when it's working. But if the faith study group suddenly grew to 25 people, you would feel every level above start to erode: discussions become shallow, psychological safety drops, belonging diffuses, voice disappears. <strong>In vetting, structure is a hygiene factor: its absence disqualifies a group; its presence does not score points.</strong></p>
+  </div>
+
+  <div class="source-note">
+    <p>Research basis: Mullen &amp; Copper (1994) · Zander (1976) · Edmondson (1999, 2018) · Kristof-Brown et al. (2005) · Baumeister &amp; Leary (1995) · Pardede &amp; Kovač (2025) · Bauer et al. (2025) · McMillan &amp; Chavis (1986) · Metz et al. (2018) · Wenger (1998) · Putnam (2000) · Holt-Lunstad (2017) · Hackman (2002) · Wheelan (2009). Full bibliography in group_dna_research.md.</p>
+  </div>
+
+</div>
+</body>
+</html>
